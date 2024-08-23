@@ -130,9 +130,9 @@ trait PluginTrait {
 	/**
 	 * 要使用 type="module" 的 script handle
 	 *
-	 * @var array<string>
+	 * @var array<handle: string, strategy:string>
 	 */
-	protected static $module_handles = [];
+	private static $module_handles = [];
 
 	/**
 	 * Init
@@ -499,6 +499,16 @@ trait PluginTrait {
 	}
 
 	/**
+	 * Add module handle
+	 * @param string $handle The script handle.
+	 * @param string $strategy The strategy.
+	 * @return void
+	 */
+	public function add_module_handle( string $handle, string $strategy = 'async' ): void {
+		self::$module_handles[$handle] = $strategy;
+	}
+
+	/**
 	 * Add type attribute to script tag
 	 * @param string $tag The script tag.
 	 * @param string $handle The script handle.
@@ -506,13 +516,14 @@ trait PluginTrait {
 	 * @return string
 	 */
 	public static function add_type_attribute( $tag, $handle, $src ) {
-		if ( !in_array( $handle, self::$module_handles ) ) {
+		if ( !in_array( $handle, array_keys( self::$module_handles ) ) ) {
 			return $tag;
 		}
 		// change the script tag by adding type="module" and return it.
 		$tag = sprintf(
-		/*html*/'<script type="module" src="%s" async></script>', // phpcs:ignore
-		\esc_url( $src )
+		/*html*/'<script type="module" src="%1$s" %2$s></script>', // phpcs:ignore
+		\esc_url( $src ),
+		self::$module_handles[$handle]
 		);
 		return $tag;
 	}
