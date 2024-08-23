@@ -128,6 +128,13 @@ trait PluginTrait {
 	protected static $plugin_entry_path;
 
 	/**
+	 * 要使用 type="module" 的 script handle
+	 *
+	 * @var array<string>
+	 */
+	protected static $module_handles = [];
+
+	/**
 	 * Init
 	 * Set the app_name, github_repo, callback, callback_args
 	 *
@@ -144,6 +151,7 @@ trait PluginTrait {
 		\register_deactivation_hook(self::$plugin_entry_path, [ $this, 'deactivate' ]);
 		\add_action('plugins_loaded', [ $this, 'check_required_plugins' ]);
 		\add_action( 'admin_menu', [ $this, 'add_debug_submenu_page' ] );
+		\add_filter('script_loader_tag', [ $this, 'add_type_attribute' ], 10, 3);
 
 		$this->register_required_plugins();
 		$this->set_puc_pat();
@@ -488,6 +496,25 @@ trait PluginTrait {
 		}
 
 		return '';
+	}
+
+	/**
+	 * Add type attribute to script tag
+	 * @param string $tag The script tag.
+	 * @param string $handle The script handle.
+	 * @param string $src The script src.
+	 * @return string
+	 */
+	public static function add_type_attribute( $tag, $handle, $src ) {
+		if ( !in_array( $handle, self::$module_handles ) ) {
+			return $tag;
+		}
+		// change the script tag by adding type="module" and return it.
+		$tag = sprintf(
+		/*html*/'<script type="module" src="%s" async></script>', // phpcs:ignore
+		\esc_url( $src )
+		);
+		return $tag;
 	}
 
     /**
