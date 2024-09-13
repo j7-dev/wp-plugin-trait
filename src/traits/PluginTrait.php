@@ -144,12 +144,12 @@ trait PluginTrait {
 	 * @example set_const( array( 'app_name' => 'My App', 'github_repo' => '', 'callback' => array($this, 'func') ) );
 	 */
 	final public function init( array $args ): void {
-
+		$priority = $args['priority'] ?? 10;
 		$this->set_const($args);
 
 		\register_activation_hook(self::$plugin_entry_path, [ $this, 'activate' ]);
 		\register_deactivation_hook(self::$plugin_entry_path, [ $this, 'deactivate' ]);
-		\add_action('plugins_loaded', [ $this, 'check_required_plugins' ]);
+		\add_action('plugins_loaded', [ $this, 'check_required_plugins' ], $priority);
 		\add_action( 'admin_menu', [ $this, 'add_debug_submenu_page' ] );
 		\add_filter('script_loader_tag', [ $this, 'add_type_attribute' ], 10, 3);
 
