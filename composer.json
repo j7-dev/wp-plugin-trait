@@ -1,6 +1,6 @@
 {
 	"name": "j7-dev/wp-plugin-trait",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"description": "traits for WordPress plugin development",
 	"homepage": "https://github.com/j7-dev",
 	"type": "library",
@@ -39,10 +39,10 @@
 		"wp-coding-standards/wpcs": "@stable",
 		"dealerdirect/phpcodesniffer-composer-installer": "@stable",
 		"phpcompatibility/php-compatibility": "@stable",
-		"phpstan/phpstan": "^1.11",
-		"php-stubs/woocommerce-stubs": "^9.0",
-		"php-stubs/wordpress-stubs": "^6.5",
-		"phpstan/extension-installer": "^1.4"
+		"phpstan/phpstan": "^1.11.9",
+		"php-stubs/woocommerce-stubs": "^9.1",
+		"php-stubs/wordpress-stubs": "^6.6",
+		"phpstan/extension-installer": "^1.4.1"
 	},
 	"scripts": {
 		"lint": "phpcs"

@@ -152,6 +152,7 @@ trait PluginTrait {
 		\add_action('plugins_loaded', [ $this, 'check_required_plugins' ], $priority);
 		\add_action( 'admin_menu', [ $this, 'add_debug_submenu_page' ] );
 		\add_filter('script_loader_tag', [ $this, 'add_type_attribute' ], 10, 3);
+		\add_action('plugins_loaded', [ $this, 'load_textdomain' ]);
 
 		$this->register_required_plugins();
 		$this->set_puc_pat();
@@ -528,21 +529,28 @@ trait PluginTrait {
 		return $tag;
 	}
 
-    /**
-     * Activate
-     *
-     * @return void
-     */
-    final public function activate(): void
-    {
-    }
+	/**
+	 * Load textdomain
+	 */
+	public function load_textdomain(): void {
+		\load_plugin_textdomain(self::$snake, false, self::$dir . '/languages');
+	}
 
-    /**
-     * Deactivate
-     *
-     * @return void
-     */
-    final public function deactivate(): void
-    {
-    }
+	/**
+	 * Activate
+	 *
+	 * @return void
+	 */
+	final public function activate(): void
+	{
+	}
+
+	/**
+	 * Deactivate
+	 *
+	 * @return void
+	 */
+	final public function deactivate(): void
+	{
+	}
 }
