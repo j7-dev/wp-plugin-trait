@@ -91,7 +91,14 @@ trait PluginTrait {
 	 *
 	 * @var int
 	 */
-	public static $menu_position = 10;
+	public static $submenu_position = 10;
+
+	/**
+	 * Hide Submenu
+	 *
+	 * @var bool
+	 */
+	public static $hide_submenu = false;
 
 	/**
 	 * Template Path
@@ -170,15 +177,52 @@ trait PluginTrait {
 
 		\register_activation_hook(self::$plugin_entry_path, [ $this, 'activate' ]);
 		\register_deactivation_hook(self::$plugin_entry_path, [ $this, 'deactivate' ]);
-		\add_action('plugins_loaded', [ $this, 'check_required_plugins' ], $priority);
+		\add_action('plugins_loaded', fn() => $this->check_required_plugins($args), $priority);
 		\add_action( 'admin_menu', [ $this, 'add_debug_submenu_page' ] );
 		\add_filter('script_loader_tag', [ $this, 'add_type_attribute' ], 10, 3);
 		\add_action('plugins_loaded', [ $this, 'load_textdomain' ]);
 
-		$this->set_lc($args);
 		$this->register_required_plugins();
 		$this->set_puc_pat();
 		$this->plugin_update_checker();
+	}
+
+	/**
+ * Set const
+ * Set the app_name, github_repo
+ *
+ * @param array $args The arguments.
+ *
+ * @return void
+ * @example set_const( array( 'app_name' => 'My App', 'github_repo' => '' ) );
+ */
+	final public function set_const( array $args ): void {
+		self::$app_name      = $args['app_name'];
+		self::$kebab         = strtolower(str_replace(' ', '-', $args['app_name']));
+		self::$snake         = strtolower(str_replace(' ', '_', $args['app_name']));
+		self::$github_repo   = $args['github_repo'];
+		self::$callback      = $args['callback'];
+		self::$callback_args = $args['callback_args'] ?? [];
+		if (isset($args['template_path'])) {
+			self::$template_path = $args['template_path'];
+		}
+		if (isset($args['template_page_names'])) {
+			self::$template_page_names = $args['template_page_names'];
+		}
+
+		$reflector               = new \ReflectionClass(get_called_class());
+		self::$plugin_entry_path = $reflector?->getFileName();
+
+		self::$dir = \untrailingslashit(\wp_normalize_path(\plugin_dir_path(self::$plugin_entry_path)));
+		self::$url = \untrailingslashit(\plugin_dir_url(self::$plugin_entry_path));
+		if (!\function_exists('get_plugin_data')) {
+			require_once \ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		$plugin_data            = \get_plugin_data(self::$plugin_entry_path);
+		self::$version          = $plugin_data['Version'];
+		self::$capability       = $args['capability'] ?? 'manage_options';
+		self::$submenu_position = $args['submenu_position'] ?? 10;
+		self::$hide_submenu     = $args['hide_submenu'] ?? false;
 	}
 
 	/**
@@ -214,6 +258,9 @@ trait PluginTrait {
 	 * Add LC menu
 	 */
 	final public static function add_lc_menu(): void {
+		if (self::$hide_submenu) {
+			return;
+		}
 		$is_activated = \J7\Powerhouse\LC::is_activated(self::$kebab);
 		\add_submenu_page(
 		'powerhouse',
@@ -222,7 +269,7 @@ trait PluginTrait {
 		self::$capability,
 		self::$kebab,
 		$is_activated ? '' : [ __CLASS__, 'redirect' ],
-		self::$menu_position
+		self::$submenu_position
 		);
 	}
 
@@ -235,49 +282,6 @@ trait PluginTrait {
 		// @phpstan-ignore-next-line
 		\wp_redirect(\admin_url('admin.php?page=' . \J7\Powerhouse\Bootstrap::LC_MENU_SLUG));
 		exit;
-	}
-
-	/**
-	 * Set const
-	 * Set the app_name, github_repo
-	 *
-	 * @param array $args The arguments.
-	 *
-	 * @return void
-	 * @example set_const( array( 'app_name' => 'My App', 'github_repo' => '' ) );
-	 */
-	final public function set_const( array $args ): void {
-		self::$app_name      = $args['app_name'];
-		self::$kebab         = strtolower(str_replace(' ', '-', $args['app_name']));
-		self::$snake         = strtolower(str_replace(' ', '_', $args['app_name']));
-		self::$github_repo   = $args['github_repo'];
-		self::$callback      = $args['callback'];
-		self::$callback_args = $args['callback_args'] ?? [];
-		if (isset($args['template_path'])) {
-			self::$template_path = $args['template_path'];
-		}
-		if (isset($args['template_page_names'])) {
-			self::$template_page_names = $args['template_page_names'];
-		}
-
-		$reflector               = new \ReflectionClass(get_called_class());
-		self::$plugin_entry_path = $reflector?->getFileName();
-
-		self::$dir = \untrailingslashit(\wp_normalize_path(\plugin_dir_path(self::$plugin_entry_path)));
-		self::$url = \untrailingslashit(\plugin_dir_url(self::$plugin_entry_path));
-		if (!\function_exists('get_plugin_data')) {
-			require_once \ABSPATH . 'wp-admin/includes/plugin.php';
-		}
-		$plugin_data   = \get_plugin_data(self::$plugin_entry_path);
-		self::$version = $plugin_data['Version'];
-
-		if (isset($args['capability'])) {
-			self::$capability = $args['capability'];
-		}
-
-		if (isset($args['menu_position'])) {
-			self::$menu_position = $args['menu_position'];
-		}
 	}
 
 	/**
@@ -430,8 +434,10 @@ trait PluginTrait {
      *
      * @return void
      */
-    public function check_required_plugins(): void
+    public function check_required_plugins( array $args): void
     {
+				$this->set_lc($args);
+
         $instance = \J7_Required_Plugins::get_instance(self::$kebab);
         $is_j7rp_complete = $instance->is_j7rp_complete();
 
