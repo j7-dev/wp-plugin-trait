@@ -73,6 +73,27 @@ trait PluginTrait {
 	public static $version;
 
 	/**
+	 * Plugin Capability
+	 *
+	 * @var string
+	 */
+	public static $capability = 'manage_options';
+
+	/**
+	 * Need LC
+	 *
+	 * @var bool
+	 */
+	public static $need_lc = true;
+
+	/**
+	 * Plugin Menu Position
+	 *
+	 * @var int
+	 */
+	public static $menu_position = 10;
+
+	/**
 	 * Template Path
 	 *
 	 * @var string
@@ -138,7 +159,7 @@ trait PluginTrait {
 	 * Init
 	 * Set the app_name, github_repo, callback, callback_args
 	 *
-	 * @param array $args The arguments.
+	 * @param array{app_name: string, github_repo: string, callback: callable, callback_args?: array<mixed>, lc?:boolean} $args The arguments.
 	 *
 	 * @return void
 	 * @example set_const( array( 'app_name' => 'My App', 'github_repo' => '', 'callback' => array($this, 'func') ) );
@@ -154,9 +175,66 @@ trait PluginTrait {
 		\add_filter('script_loader_tag', [ $this, 'add_type_attribute' ], 10, 3);
 		\add_action('plugins_loaded', [ $this, 'load_textdomain' ]);
 
+		$this->set_lc($args);
 		$this->register_required_plugins();
 		$this->set_puc_pat();
 		$this->plugin_update_checker();
+	}
+
+	/**
+	 * Set LC
+	 *
+	 * @param array $args The arguments.
+	 *
+	 * @return void
+	 */
+	final public function set_lc( array $args ): void {
+		self::$need_lc = $args['lc'] ?? \class_exists('\J7\Powerhouse\LC');
+
+		if (!self::$need_lc || !\class_exists('\J7\Powerhouse\LC')) {
+			return;
+		}
+
+		\add_filter(
+			'powerhouse_product_infos',
+			function ( $product_infos ) {
+				return $product_infos + [
+					self::$kebab => [
+						'name' => self::$app_name,
+						'link' => $args['link'] ?? '',
+					],
+				]; }
+			);
+
+		\add_action('admin_menu', [ __CLASS__, 'add_lc_menu' ], 20);
+	}
+
+
+	/**
+	 * Add LC menu
+	 */
+	final public static function add_lc_menu(): void {
+		$is_activated = \J7\Powerhouse\LC::is_activated(self::$kebab);
+		\add_submenu_page(
+		'powerhouse',
+		self::$app_name,
+		self::$app_name,
+		self::$capability,
+		self::$kebab,
+		$is_activated ? '' : [ __CLASS__, 'redirect' ],
+		self::$menu_position
+		);
+	}
+
+	/**
+	 * Redirect to the admin page.
+	 *
+	 * @return void
+	 */
+	final public static function redirect(): void {
+		// @phpstan-ignore-next-line
+		\wp_redirect(\admin_url('admin.php?page=' . \J7\Powerhouse\Bootstrap::LC_MENU_SLUG));
+		exit;
 	}
 
 	/**
@@ -192,6 +270,14 @@ trait PluginTrait {
 		}
 		$plugin_data   = \get_plugin_data(self::$plugin_entry_path);
 		self::$version = $plugin_data['Version'];
+
+		if (isset($args['capability'])) {
+			self::$capability = $args['capability'];
+		}
+
+		if (isset($args['menu_position'])) {
+			self::$menu_position = $args['menu_position'];
+		}
 	}
 
 	/**
@@ -349,11 +435,16 @@ trait PluginTrait {
         $instance = \J7_Required_Plugins::get_instance(self::$kebab);
         $is_j7rp_complete = $instance->is_j7rp_complete();
 
-        if ($is_j7rp_complete) {
-            if (is_callable(self::$callback)) {
-                call_user_func_array(self::$callback, self::$callback_args);
-            }
-        }
+        if (!$is_j7rp_complete) {
+					return;
+				}
+				if (!is_callable(self::$callback)) {
+					return;
+				}
+				if(self::$need_lc && !\J7\Powerhouse\LC::is_activated(self::$kebab)) {
+					return;
+				}
+       call_user_func_array(self::$callback, self::$callback_args);
     }
 
     private function read_debug_log() {

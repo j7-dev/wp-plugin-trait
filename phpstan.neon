@@ -1,8 +1,7 @@
 parameters:
 	level: 6
 	paths:
-		- plugin.php
-		- inc/
+		- src/traits/*
 	ignoreErrors:
 		- '#Constant .* not found#'
 		- '#Function .* not found#'
