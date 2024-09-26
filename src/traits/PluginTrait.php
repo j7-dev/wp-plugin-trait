@@ -269,7 +269,7 @@ trait PluginTrait {
 		if (self::$hide_submenu) {
 			return;
 		}
-		$is_activated = \J7\Powerhouse\LC::is_activated(self::$kebab);
+		$ia = \J7\Powerhouse\LC::ia(self::$kebab);
 
 		\add_submenu_page(
 		'powerhouse',
@@ -277,7 +277,7 @@ trait PluginTrait {
 		self::$app_name,
 		self::$capability,
 		self::$kebab,
-		( self::$need_lc && !$is_activated ) ? [ __CLASS__, 'redirect' ] : self::$submenu_callback,
+		( self::$need_lc && !$ia ) ? [ __CLASS__, 'redirect' ] : self::$submenu_callback,
 		self::$submenu_position
 		);
 	}
@@ -459,7 +459,7 @@ trait PluginTrait {
 				if (!is_callable(self::$callback)) {
 					return;
 				}
-				if(self::$need_lc && !\J7\Powerhouse\LC::is_activated(self::$kebab)) {
+				if(self::$need_lc && !\J7\Powerhouse\LC::ia(self::$kebab)) {
 					return;
 				}
        call_user_func_array(self::$callback, self::$callback_args);
