@@ -230,6 +230,7 @@ trait PluginTrait {
 		self::$capability       = $args['capability'] ?? 'manage_options';
 		self::$submenu_position = $args['submenu_position'] ?? 10;
 		self::$hide_submenu     = $args['hide_submenu'] ?? false;
+		self::$submenu_callback = $args['submenu_callback'] ?? '';
 	}
 
 	/**
@@ -241,6 +242,8 @@ trait PluginTrait {
 	 */
 	final public function set_lc( array $args ): void {
 		self::$need_lc = $args['lc'] ?? \class_exists('\J7\Powerhouse\LC');
+
+		\add_action('admin_menu', [ __CLASS__, 'add_lc_menu' ], 20);
 
 		if (!self::$need_lc || !\class_exists('\J7\Powerhouse\LC')) {
 			return;
@@ -256,8 +259,6 @@ trait PluginTrait {
 					],
 				]; }
 			);
-
-		\add_action('admin_menu', [ __CLASS__, 'add_lc_menu' ], 20);
 	}
 
 
@@ -269,13 +270,14 @@ trait PluginTrait {
 			return;
 		}
 		$is_activated = \J7\Powerhouse\LC::is_activated(self::$kebab);
+
 		\add_submenu_page(
 		'powerhouse',
 		self::$app_name,
 		self::$app_name,
 		self::$capability,
 		self::$kebab,
-		$is_activated ? self::$submenu_callback : [ __CLASS__, 'redirect' ],
+		( self::$need_lc && !$is_activated ) ? [ __CLASS__, 'redirect' ] : self::$submenu_callback,
 		self::$submenu_position
 		);
 	}
