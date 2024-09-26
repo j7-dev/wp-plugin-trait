@@ -101,6 +101,13 @@ trait PluginTrait {
 	public static $hide_submenu = false;
 
 	/**
+	 * Submenu Callback
+	 *
+	 * @var callable
+	 */
+	public static $submenu_callback = '';
+
+	/**
 	 * Template Path
 	 *
 	 * @var string
@@ -268,7 +275,7 @@ trait PluginTrait {
 		self::$app_name,
 		self::$capability,
 		self::$kebab,
-		$is_activated ? '' : [ __CLASS__, 'redirect' ],
+		$is_activated ? self::$submenu_callback : [ __CLASS__, 'redirect' ],
 		self::$submenu_position
 		);
 	}
@@ -279,6 +286,9 @@ trait PluginTrait {
 	 * @return void
 	 */
 	final public static function redirect(): void {
+		if (!class_exists('\J7\Powerhouse\Bootstrap')) {
+			return;
+		}
 		// @phpstan-ignore-next-line
 		\wp_redirect(\admin_url('admin.php?page=' . \J7\Powerhouse\Bootstrap::LC_MENU_SLUG));
 		exit;
