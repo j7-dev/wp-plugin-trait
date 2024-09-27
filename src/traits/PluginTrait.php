@@ -269,7 +269,10 @@ trait PluginTrait {
 		if (self::$hide_submenu) {
 			return;
 		}
-		$ia = \J7\Powerhouse\LC::ia(self::$kebab);
+		$ia = true;
+		if (class_exists('\J7\Powerhouse\LC')) {
+			$ia = \J7\Powerhouse\LC::ia(self::$kebab);
+		}
 
 		\add_submenu_page(
 		'powerhouse',
@@ -459,7 +462,13 @@ trait PluginTrait {
 				if (!is_callable(self::$callback)) {
 					return;
 				}
-				if(self::$need_lc && !\J7\Powerhouse\LC::ia(self::$kebab)) {
+
+				$ia = true;
+				if (class_exists('\J7\Powerhouse\LC')) {
+					$ia = \J7\Powerhouse\LC::ia(self::$kebab);
+				}
+
+				if(self::$need_lc && !$ia) {
 					return;
 				}
        call_user_func_array(self::$callback, self::$callback_args);
