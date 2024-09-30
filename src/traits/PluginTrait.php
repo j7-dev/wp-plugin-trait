@@ -82,7 +82,7 @@ trait PluginTrait {
 	/**
 	 * Need LC
 	 *
-	 * @var bool
+	 * @var bool|string true|false|'skip'
 	 */
 	public static $need_lc = true;
 
@@ -245,7 +245,7 @@ trait PluginTrait {
 
 		\add_action('admin_menu', [ __CLASS__, 'add_lc_menu' ], 20);
 
-		if (!self::$need_lc || !\class_exists('\J7\Powerhouse\LC')) {
+		if (false ===self::$need_lc || !\class_exists('\J7\Powerhouse\LC')) {
 			return;
 		}
 
@@ -280,7 +280,7 @@ trait PluginTrait {
 		self::$app_name,
 		self::$capability,
 		self::$kebab,
-		( self::$need_lc && !$ia ) ? [ __CLASS__, 'redirect' ] : self::$submenu_callback,
+		( true === self::$need_lc && !$ia ) ? [ __CLASS__, 'redirect' ] : self::$submenu_callback,
 		self::$submenu_position
 		);
 	}
@@ -468,10 +468,10 @@ trait PluginTrait {
 					$ia = \J7\Powerhouse\LC::ia(self::$kebab);
 				}
 
-				if(self::$need_lc && !$ia) {
-					return;
-				}
-       call_user_func_array(self::$callback, self::$callback_args);
+			if(true !== self::$need_lc || $ia) {
+				call_user_func_array(self::$callback, self::$callback_args);
+			}
+
     }
 
     private function read_debug_log() {
