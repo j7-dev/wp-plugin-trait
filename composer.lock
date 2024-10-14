@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a3429a5e3e3b20aa22dfa64693ee60ee",
+    "content-hash": "e5c32adec631c4151103e9c41da4fde2",
     "packages": [
         {
             "name": "j7-dev/tgm-plugin-activation-forked",
-            "version": "1.2.4",
+            "version": "1.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/j7-dev/tgm-plugin-activation-forked.git",
-                "reference": "b40e832ed1655dd660772b683ba8b7d6bddd7a62"
+                "reference": "f1a116b0a08edb4c8a01b91b24e7b114a4561f41"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/j7-dev/tgm-plugin-activation-forked/zipball/b40e832ed1655dd660772b683ba8b7d6bddd7a62",
-                "reference": "b40e832ed1655dd660772b683ba8b7d6bddd7a62",
+                "url": "https://api.github.com/repos/j7-dev/tgm-plugin-activation-forked/zipball/f1a116b0a08edb4c8a01b91b24e7b114a4561f41",
+                "reference": "f1a116b0a08edb4c8a01b91b24e7b114a4561f41",
                 "shasum": ""
             },
             "require": {
@@ -54,7 +54,7 @@
                 "issues": "https://github.com/j7-dev/tgm-plugin-activation-forked/issues",
                 "source": "https://github.com/j7-dev/tgm-plugin-activation-forked"
             },
-            "time": "2024-07-03T04:41:48+00:00"
+            "time": "2024-10-14T06:58:33+00:00"
         },
         {
             "name": "yahnis-elsts/plugin-update-checker",
@@ -188,16 +188,16 @@
         },
         {
             "name": "php-stubs/woocommerce-stubs",
-            "version": "v9.3.1",
+            "version": "v9.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-stubs/woocommerce-stubs.git",
-                "reference": "3705959c37f0d79feaa6a13f8e296b155aa4bce8"
+                "reference": "1995245b3ebfd82eeaf3a8e9d3ec962f00ab3b73"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-stubs/woocommerce-stubs/zipball/3705959c37f0d79feaa6a13f8e296b155aa4bce8",
-                "reference": "3705959c37f0d79feaa6a13f8e296b155aa4bce8",
+                "url": "https://api.github.com/repos/php-stubs/woocommerce-stubs/zipball/1995245b3ebfd82eeaf3a8e9d3ec962f00ab3b73",
+                "reference": "1995245b3ebfd82eeaf3a8e9d3ec962f00ab3b73",
                 "shasum": ""
             },
             "require": {
@@ -226,22 +226,22 @@
             ],
             "support": {
                 "issues": "https://github.com/php-stubs/woocommerce-stubs/issues",
-                "source": "https://github.com/php-stubs/woocommerce-stubs/tree/v9.3.1"
+                "source": "https://github.com/php-stubs/woocommerce-stubs/tree/v9.3.3"
             },
-            "time": "2024-09-16T14:57:37+00:00"
+            "time": "2024-09-25T17:38:08+00:00"
         },
         {
             "name": "php-stubs/wordpress-stubs",
-            "version": "v6.6.0",
+            "version": "v6.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-stubs/wordpress-stubs.git",
-                "reference": "86e8753e89d59849276dcdd91b9a7dd78bb4abe2"
+                "reference": "f50fd7ed45894d036e4fef9ab7e5bbbaff6a30cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-stubs/wordpress-stubs/zipball/86e8753e89d59849276dcdd91b9a7dd78bb4abe2",
-                "reference": "86e8753e89d59849276dcdd91b9a7dd78bb4abe2",
+                "url": "https://api.github.com/repos/php-stubs/wordpress-stubs/zipball/f50fd7ed45894d036e4fef9ab7e5bbbaff6a30cc",
+                "reference": "f50fd7ed45894d036e4fef9ab7e5bbbaff6a30cc",
                 "shasum": ""
             },
             "require-dev": {
@@ -274,9 +274,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-stubs/wordpress-stubs/issues",
-                "source": "https://github.com/php-stubs/wordpress-stubs/tree/v6.6.0"
+                "source": "https://github.com/php-stubs/wordpress-stubs/tree/v6.6.2"
             },
-            "time": "2024-07-17T08:50:38+00:00"
+            "time": "2024-09-30T07:10:48+00:00"
         },
         {
             "name": "phpcompatibility/php-compatibility",
@@ -346,12 +346,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHPCSExtra.git",
-                "reference": "de3789a59ee046291bb196c03862c871a692dc75"
+                "reference": "d0304203dd7c6f8eab21ed8adabe5e3be380bdbe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHPCSExtra/zipball/de3789a59ee046291bb196c03862c871a692dc75",
-                "reference": "de3789a59ee046291bb196c03862c871a692dc75",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHPCSExtra/zipball/d0304203dd7c6f8eab21ed8adabe5e3be380bdbe",
+                "reference": "d0304203dd7c6f8eab21ed8adabe5e3be380bdbe",
                 "shasum": ""
             },
             "require": {
@@ -417,7 +417,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-07-23T06:25:32+00:00"
+            "time": "2024-10-14T00:01:10+00:00"
         },
         {
             "name": "phpcsstandards/phpcsutils",
@@ -425,18 +425,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHPCSUtils.git",
-                "reference": "5ce89dad42ec5bf0a45fd244b05421c4f5c36299"
+                "reference": "a6a0a723bc4efce5b8a12646f28bb83c4610dfac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHPCSUtils/zipball/5ce89dad42ec5bf0a45fd244b05421c4f5c36299",
-                "reference": "5ce89dad42ec5bf0a45fd244b05421c4f5c36299",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHPCSUtils/zipball/a6a0a723bc4efce5b8a12646f28bb83c4610dfac",
+                "reference": "a6a0a723bc4efce5b8a12646f28bb83c4610dfac",
                 "shasum": ""
             },
             "require": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.4.1 || ^0.5 || ^0.6.2 || ^0.7 || ^1.0",
                 "php": ">=5.4",
-                "squizlabs/php_codesniffer": "^3.10.0 || 4.0.x-dev@dev"
+                "squizlabs/php_codesniffer": "^3.10.1 || 4.0.x-dev@dev"
             },
             "require-dev": {
                 "ext-filter": "*",
@@ -506,7 +506,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2024-09-20T09:50:45+00:00"
+            "time": "2024-10-13T23:57:40+00:00"
         },
         {
             "name": "phpstan/extension-installer",
@@ -563,12 +563,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "18c75a2fdc2286bf47a400a52cb3ece8fe96383b"
+                "reference": "3128f268c14633ecfd9efed25ca69f36e561b4f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/18c75a2fdc2286bf47a400a52cb3ece8fe96383b",
-                "reference": "18c75a2fdc2286bf47a400a52cb3ece8fe96383b",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/3128f268c14633ecfd9efed25ca69f36e561b4f4",
+                "reference": "3128f268c14633ecfd9efed25ca69f36e561b4f4",
                 "shasum": ""
             },
             "require": {
@@ -613,7 +613,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-09-22T09:27:52+00:00"
+            "time": "2024-10-13T15:29:10+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",

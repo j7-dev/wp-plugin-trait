@@ -1,6 +1,6 @@
 {
 	"name": "j7-dev/wp-plugin-trait",
-	"version": "0.0.13",
+	"version": "0.0.14",
 	"description": "traits for WordPress plugin development",
 	"homepage": "https://github.com/j7-dev",
 	"type": "library",
@@ -31,7 +31,7 @@
 		}
 	},
 	"require": {
-		"j7-dev/tgm-plugin-activation-forked": "1.2.4",
+		"j7-dev/tgm-plugin-activation-forked": "1.2.5",
 		"yahnis-elsts/plugin-update-checker": "5.3"
 	},
 	"require-dev": {
