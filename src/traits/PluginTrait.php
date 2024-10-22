@@ -269,6 +269,14 @@ trait PluginTrait {
 		if (self::$hide_submenu) {
 			return;
 		}
+
+		$instance         = \J7_Required_Plugins::get_instance(self::$kebab);
+		$is_j7rp_complete = $instance->is_j7rp_complete();
+
+		if (!$is_j7rp_complete) {
+			return;
+		}
+
 		$ia = true;
 		if (class_exists('\J7\Powerhouse\LC')) {
 			$ia = \J7\Powerhouse\LC::ia(self::$kebab);
