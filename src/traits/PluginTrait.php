@@ -559,7 +559,7 @@ trait PluginTrait {
 		?bool $load_once = false,
 	): ?string {
 		$result = self::safe_get( $name, $args, $output, $load_once );
-		if ( '' === $result ) {
+		if ( 'NOT_FOUND' === $result ) {
 			throw new \Exception( "模板文件 {$name} 不存在" );
 		}
 
@@ -622,7 +622,7 @@ trait PluginTrait {
 			return ob_get_clean();
 		}
 
-		return '';
+		return 'NOT_FOUND';
 	}
 
 	/**
