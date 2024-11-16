@@ -206,7 +206,7 @@ trait PluginTrait {
 	final public function set_const( array $args ): void {
 		self::$app_name      = $args['app_name'];
 		self::$kebab         = strtolower(str_replace([ ' ', '_' ], '-', $args['app_name']));
-		self::$snake         = strtolower(str_replace([ ' ', '_' ], '_', $args['app_name']));
+		self::$snake         = strtolower(str_replace([ ' ', '-' ], '_', $args['app_name']));
 		self::$github_repo   = $args['github_repo'];
 		self::$callback      = $args['callback'];
 		self::$callback_args = $args['callback_args'] ?? [];
