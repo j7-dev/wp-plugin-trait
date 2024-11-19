@@ -655,6 +655,26 @@ trait PluginTrait {
 		return $tag;
 	}
 
+
+	/**
+	 * 取得設定
+	 *
+	 * @param string|null $key 設定 key
+	 * @param string|null $default 預設值
+	 * @return string|array
+	 */
+	public static function get_settings( ?string $key = null, ?string $default = null ): string|array {
+		$settings = \get_option(self::$snake . '_settings', []);
+		if (!\is_array($settings)) {
+			$settings = [];
+		}
+		if (!$key) {
+			return $settings;
+		}
+
+		return $settings[ $key ] ?? $default;
+	}
+
 	/**
 	 * Load textdomain
 	 */
