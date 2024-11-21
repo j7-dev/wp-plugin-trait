@@ -1,6 +1,6 @@
 {
 	"name": "j7-dev/wp-plugin-trait",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "traits for WordPress plugin development",
 	"homepage": "https://github.com/j7-dev",
 	"type": "library",
@@ -12,7 +12,8 @@
 	"license": "GPL-3.0-or-later",
 	"autoload": {
 		"psr-4": {
-			"J7\\WpUtils\\Traits\\": "src/traits/"
+			"J7\\WpUtils\\Traits\\": "src/traits/",
+			"J7\\WpUtils\\Classes\\": "src/classes/"
 		}
 	},
 	"authors": [

@@ -1,24 +1,59 @@
 <?php
 /**
- * ApiRegisterTrait class
+ * ApiBase class
  * 註冊 API
  *
  * @package J7\WpUtils
  */
 
-namespace J7\WpUtils\Traits;
+namespace J7\WpUtils\Classes;
 
-if ( trait_exists( 'ApiRegisterTrait' ) ) {
+if ( trait_exists( 'ApiBase' ) ) {
 	return;
 }
 
 /**
- * Class ApiRegisterTrait
- * DELETE
- *
- * @deprecated from v0.1.1 ApiBase，預計 v0.2.0 完全棄用
+ * Class ApiBase
  */
-trait ApiRegisterTrait {
+abstract class ApiBase {
+	use \J7\WpUtils\Traits\SingletonTrait;
+
+	/**
+	 * APIs
+	 *
+	 * @var array{endpoint:string,method:string,permission_callback: callable|null }[]
+	 * - endpoint: string
+	 * - method: 'get' | 'post' | 'patch' | 'delete'
+	 * - permission_callback : callable
+	 */
+	protected $apis = [
+		// [
+		// 'endpoint'            => 'posts',
+		// 'method'              => 'get',
+		// 'permission_callback' => null,
+		// ],
+	];
+
+	/**
+	 * Namespace
+	 *
+	 * @var string
+	 */
+	protected $namespace = '';
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		\add_action(
+			'rest_api_init',
+			fn() => $this->register_apis(
+			$this->apis,
+			$this->namespace,
+			fn() => \current_user_can( 'manage_options' )
+			)
+			);
+	}
 
 	/**
 	 * Register APIs
