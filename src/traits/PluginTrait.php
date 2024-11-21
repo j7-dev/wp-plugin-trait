@@ -187,7 +187,7 @@ trait PluginTrait {
 		\add_action('plugins_loaded', fn() => $this->check_required_plugins($args), $priority);
 		\add_action( 'admin_menu', [ $this, 'add_debug_submenu_page' ] );
 		\add_filter('script_loader_tag', [ $this, 'add_type_attribute' ], 10, 3);
-		\add_action('plugins_loaded', [ $this, 'load_textdomain' ]);
+		\add_action('init', [ $this, 'load_textdomain' ]);
 
 		$this->register_required_plugins();
 		$this->set_puc_pat();
@@ -676,7 +676,7 @@ trait PluginTrait {
 	}
 
 	/**
-	 * Load textdomain
+	 * Load textdomain i18n
 	 */
 	public function load_textdomain(): void {
 		\load_plugin_textdomain(self::$snake, false, self::$dir . '/languages');
