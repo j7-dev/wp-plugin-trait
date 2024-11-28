@@ -16,7 +16,6 @@ if ( trait_exists( 'ApiBase' ) ) {
  * Class ApiBase
  */
 abstract class ApiBase {
-	use \J7\WpUtils\Traits\SingletonTrait;
 
 	/**
 	 * APIs
