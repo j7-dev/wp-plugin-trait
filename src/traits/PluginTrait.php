@@ -593,11 +593,9 @@ trait PluginTrait {
 			}
 		}
 
-		if ( $is_page ) {
-			$template_path = self::$dir . self::$template_path .  '/templates/pages/' . $name;
-		} else { // 不是區域名稱就去 components 裡面找
-			$template_path = self::$dir . self::$template_path .  '/templates/components/' . $name;
-		}
+		$folder = $is_page ? 'pages' : 'components';
+
+		$template_path = self::$dir . self::$template_path .  "/templates/{$folder}/{$name}";
 
 		// 檢查模板文件是否存在
 		if ( file_exists( "{$template_path}.php" ) ) {
