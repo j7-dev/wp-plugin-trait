@@ -3,6 +3,8 @@
  * ApiBase class
  * 註冊 API
  *
+ * @deprecated 下版可棄用，收錄在 wp-utils 中
+ *
  * @package J7\WpUtils
  */
 

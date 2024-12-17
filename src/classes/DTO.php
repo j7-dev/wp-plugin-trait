@@ -2,6 +2,8 @@
 /**
  * DTO class
  *
+ * @deprecated 下版可棄用，收錄在 wp-utils 中
+ *
  * @package J7\WpUtils
  */
 
@@ -12,7 +14,7 @@ if ( class_exists( 'DTO' ) ) {
 }
 
 /**
- * Class DTO
+ * Class DTO 可能單例也可能多例，自行額外實現 instance() 方法
  */
 abstract class DTO {
 
