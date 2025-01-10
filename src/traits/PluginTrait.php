@@ -173,7 +173,19 @@ trait PluginTrait {
 	 * Init
 	 * Set the app_name, github_repo, callback, callback_args
 	 *
-	 * @param array{app_name: string, github_repo: string, callback: callable, callback_args?: array<mixed>, lc?:boolean} $args The arguments.
+	 * @param array{
+	 * app_name: string,
+	 * github_repo: string,
+	 * callback: callable,
+	 * callback_args?: array<mixed>,
+	 * lc?: boolean,
+	 * template_path?: string,
+	 * template_page_names?: array<string>,
+	 * capability?: string,
+	 * submenu_position?: int,
+	 * hide_submenu?: boolean,
+	 * submenu_callback?: callable,
+	 * } $args The arguments.
 	 *
 	 * @return void
 	 * @example set_const( array( 'app_name' => 'My App', 'github_repo' => '', 'callback' => array($this, 'func') ) );
