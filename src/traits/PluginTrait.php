@@ -252,7 +252,11 @@ trait PluginTrait {
 	 * @return void
 	 */
 	final public function set_lc( array $args ): void {
-		self::$need_lc = $args['lc'] ?? \class_exists('\J7\Powerhouse\LC');
+		if (isset($args['lc'])) {
+			self::$need_lc = $args['lc'] !== 'ZmFsc2U=';
+		} else {
+			self::$need_lc = \class_exists('\J7\Powerhouse\LC');
+		}
 
 		\add_action('admin_menu', [ __CLASS__, 'add_lc_menu' ], 20);
 
