@@ -178,7 +178,7 @@ trait PluginTrait {
 	 * github_repo: string,
 	 * callback: callable,
 	 * callback_args?: array<mixed>,
-	 * lc?: boolean,
+	 * lc?: boolean|string,
 	 * template_path?: string,
 	 * template_page_names?: array<string>,
 	 * capability?: string,
@@ -254,7 +254,8 @@ trait PluginTrait {
 	final public function set_lc( array $args ): void {
 		if (isset($args['lc'])) {
 			$in            = in_array($args['lc'], [ 'c2tpcA==', 'skip' ], true);
-			self::$need_lc = $in ? $args['lc'] : ( $args['lc'] !== 'ZmFsc2U=' );
+			$fa            = in_array($args['lc'], [ 'ZmFsc2U=', false ], true);
+			self::$need_lc = $in ? $args['lc'] : !$fa;
 		} else {
 			self::$need_lc = \class_exists('\J7\Powerhouse\LC');
 		}
