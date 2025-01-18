@@ -82,7 +82,7 @@ trait PluginTrait {
 	/**
 	 * Need LC
 	 *
-	 * @var bool|string true|false|'skip'
+	 * @var bool|string true|false|c2tpcA==(skip)
 	 */
 	public static $need_lc = true;
 
@@ -253,7 +253,8 @@ trait PluginTrait {
 	 */
 	final public function set_lc( array $args ): void {
 		if (isset($args['lc'])) {
-			self::$need_lc = $args['lc'] !== 'ZmFsc2U=';
+			$in            = in_array($args['lc'], [ 'c2tpcA==', 'skip' ], true);
+			self::$need_lc = $in ? $args['lc'] : ( $args['lc'] !== 'ZmFsc2U=' );
 		} else {
 			self::$need_lc = \class_exists('\J7\Powerhouse\LC');
 		}
