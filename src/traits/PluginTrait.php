@@ -236,7 +236,7 @@ trait PluginTrait {
 		if (!\function_exists('get_plugin_data')) {
 			require_once \ABSPATH . 'wp-admin/includes/plugin.php';
 		}
-		$plugin_data            = \get_plugin_data(self::$plugin_entry_path);
+		$plugin_data            = \get_plugin_data(self::$plugin_entry_path, true, false);
 		self::$version          = $plugin_data['Version'];
 		self::$capability       = $args['capability'] ?? 'manage_options';
 		self::$submenu_position = $args['submenu_position'] ?? 10;
