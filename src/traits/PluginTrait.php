@@ -253,8 +253,8 @@ trait PluginTrait {
 	 */
 	final public function set_lc( array $args ): void {
 		if (isset($args['lc'])) {
-			$in            = in_array($args['lc'], [ 'c2tpcA==', 'skip' ], true);
-			$fa            = in_array($args['lc'], [ 'ZmFsc2U=', false ], true);
+			$fa            = in_array($args['lc'], [ 'ZmFsc2', false ], true);
+			$in            = in_array($args['lc'], [ 'c2tpcA', 'skip' ], true);
 			self::$need_lc = $in ? $args['lc'] : !$fa;
 		} else {
 			self::$need_lc = \class_exists('\J7\Powerhouse\LC');
@@ -463,9 +463,7 @@ trait PluginTrait {
                 $update_checker->setAuthentication(self::$puc_pat);
             }
             $update_checker->getVcsApi()->enableReleaseAssets();
-        } catch (\Throwable $th) { // phpcs:ignore
-            // throw $th;
-        }
+        } catch (\Throwable $th) {}
     }
 
 
@@ -499,7 +497,7 @@ trait PluginTrait {
 
     }
 
-			/**
+	/**
 	 * 從指定的模板路徑讀取模板文件並渲染數據
 	 *
 	 * @param string $name 指定路徑裡面的文件名
@@ -592,7 +590,7 @@ trait PluginTrait {
 	}
 
 	/**
-	 * Add type attribute to script tag
+	 * Add type="module" attribute to script tag
 	 * @param string $tag The script tag.
 	 * @param string $handle The script handle.
 	 * @param string $src The script src.
