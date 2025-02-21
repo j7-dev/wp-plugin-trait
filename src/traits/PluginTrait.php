@@ -15,117 +15,55 @@ use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 trait PluginTrait {
 
-	/**
-	 * App Name
-	 *
-	 * @var string
-	 */
+	/** @var string App Name */
 	public static $app_name = '';
 
-	/**
-	 * Kebab Name
-	 *
-	 * @var string
-	 */
+	/** @var string Kebab Name */
 	public static $kebab = '';
 
-	/**
-	 * Snake Name
-	 *
-	 * @var string
-	 */
+	/** @var string Snake Name */
 	public static $snake = '';
 
-	/**
-	 * Github Repo URL
-	 *
-	 * @var string
-	 */
+	/** @var 'local'|'development'|'staging'|'production' Env Name */
+	public static $env = 'production';
+
+	/** @var string Github Repo URL */
 	public static $github_repo = '';
 
-
-	/**
-	 * Plugin Update Checker Personal Access Token
-	 *
-	 * @var string
-	 */
+	/** @var string Plugin Update Checker Personal Access Token */
 	public static $puc_pat;
 
-	/**
-	 * Plugin Directory
-	 *
-	 * @var string
-	 */
+	/** @var string Plugin Directory */
 	public static $dir;
 
-	/**
-	 * Plugin URL
-	 *
-	 * @var string
-	 */
+	/** @var string Plugin URL */
 	public static $url;
 
-	/**
-	 * Plugin Version
-	 *
-	 * @var string
-	 */
+	/** @var string Plugin Version */
 	public static $version;
 
-	/**
-	 * Plugin Capability
-	 *
-	 * @var string
-	 */
+	/** @var string Plugin Capability */
 	public static $capability = 'manage_options';
 
-	/**
-	 * Need LC
-	 *
-	 * @var bool|string true|false|c2tpcA==(skip)
-	 */
+	/** @var bool|string Need LC */
 	public static $need_lc = true;
 
-	/**
-	 * Plugin Menu Position
-	 *
-	 * @var int
-	 */
+	/** @var int Plugin Menu Position */
 	public static $submenu_position = 10;
 
-	/**
-	 * Hide Submenu
-	 *
-	 * @var bool
-	 */
+	/** @var bool Hide Submenu */
 	public static $hide_submenu = false;
 
-	/**
-	 * Submenu Callback
-	 *
-	 * @var callable
-	 */
+	/** @var callable Submenu Callback */
 	public static $submenu_callback = '';
 
-	/**
-	 * Template Path
-	 *
-	 * @var string
-	 */
+	/** @var string Template Path */
 	public static $template_path = '/inc';
 
-	/**
-	 * Template Page Names
-	 *
-	 * @var array
-	 */
+	/** @var array Template Page Names */
 	public static $template_page_names = [ '404' ];
 
-	/**
-	 * Required plugins
-	 *
-	 * @var array
-	 */
+	/** @var array Required plugins */
 	public $required_plugins = [
 		// array(
 		// 'name'     => 'WooCommerce',
@@ -141,32 +79,16 @@ trait PluginTrait {
 		// ),
 	];
 
-	/**
-	 * Callback after check required plugins
-	 *
-	 * @var array
-	 */
+	/** @var array Callback after check required plugins */
 	protected static $callback;
 
-	/**
-	 * Callback Args
-	 *
-	 * @var array
-	 */
+	/** @var array Callback Args */
 	protected static $callback_args = [];
 
-	/**
-	 * Plugin Entry File
-	 *
-	 * @var string
-	 */
+	/** @var string Plugin Entry File */
 	protected static $plugin_entry_path;
 
-	/**
-	 * 要使用 type="module" 的 script handle
-	 *
-	 * @var array<handle: string, strategy:string>
-	 */
+	/** @var array<handle: string, strategy:string> 要使用 type="module" 的 script handle */
 	private static $module_handles = [];
 
 	/**
@@ -218,6 +140,7 @@ trait PluginTrait {
 		self::$app_name      = $args['app_name'];
 		self::$kebab         = strtolower(str_replace([ ' ', '_' ], '-', $args['app_name']));
 		self::$snake         = strtolower(str_replace([ ' ', '-' ], '_', $args['app_name']));
+		self::$env           = $args['env'] ?? \wp_get_environment_type();
 		self::$github_repo   = $args['github_repo'];
 		self::$callback      = $args['callback'];
 		self::$callback_args = $args['callback_args'] ?? [];
@@ -508,7 +431,7 @@ trait PluginTrait {
 	 * @return ?string
 	 * @throws \Exception 如果模板文件不存在.
 	 */
-	public static function get(
+	public static function load_template(
 		string $name,
 		mixed $args = null,
 		?bool $output = true,
@@ -524,6 +447,26 @@ trait PluginTrait {
 
 	/**
 	 * 從指定的模板路徑讀取模板文件並渲染數據
+	 * @deprecated 0.2.6 以後，改用 load_template
+	 * @param string $name 指定路徑裡面的文件名
+	 * @param mixed  $args 要渲染到模板中的數據
+	 * @param bool   $output 是否輸出
+	 * @param bool   $load_once 是否只載入一次
+	 *
+	 * @return ?string
+	 * @throws \Exception 如果模板文件不存在.
+	 */
+	public static function get(
+		string $name,
+		mixed $args = null,
+		?bool $output = true,
+		?bool $load_once = false,
+	): ?string {
+		return self::load_template( $name, $args, $output, $load_once );
+	}
+
+	/**
+	 * 從指定的模板路徑讀取模板文件並渲染數據
 	 *
 	 * @param string $name 指定路徑裡面的文件名
 	 * @param mixed  $args 要渲染到模板中的數據
@@ -533,7 +476,7 @@ trait PluginTrait {
 	 * @return string|false|null
 	 * @throws \Exception 如果模板文件不存在.
 	 */
-	public static function safe_get(
+	public static function safe_load_template(
 		string $name,
 		mixed $args = null,
 		?bool $echo = true,
@@ -579,6 +522,27 @@ trait PluginTrait {
 		return ' ';
 	}
 
+
+		/**
+	 * 從指定的模板路徑讀取模板文件並渲染數據
+	 * @deprecated 0.2.6 以後，改用 safe_load_template
+	 * @param string $name 指定路徑裡面的文件名
+	 * @param mixed  $args 要渲染到模板中的數據
+	 * @param bool   $echo 是否輸出
+	 * @param bool   $load_once 是否只載入一次
+	 *
+	 * @return string|false|null
+	 * @throws \Exception 如果模板文件不存在.
+	 */
+	public static function safe_get(
+		string $name,
+		mixed $args = null,
+		?bool $echo = true,
+		?bool $load_once = false,
+	): string|false|null {
+		return self::safe_load_template( $name, $args, $echo, $load_once );
+	}
+
 	/**
 	 * Add module handle
 	 * @param string $handle The script handle.
@@ -612,7 +576,7 @@ trait PluginTrait {
 
 	/**
 	 * 取得設定
-	 *
+	 * @deprecated 0.2.6 以後，改用 DTO
 	 * @param string|null $key 設定 key
 	 * @param string|null $default 預設值
 	 * @return string|array
