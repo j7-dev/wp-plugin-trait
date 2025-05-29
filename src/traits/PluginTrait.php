@@ -437,7 +437,7 @@ trait PluginTrait {
 		?bool $output = true,
 		?bool $load_once = false,
 	): ?string {
-		$result = self::safe_get( $name, $args, $output, $load_once );
+		$result = self::safe_load_template( $name, $args, $output, $load_once );
 		if ( ' ' === $result ) {
 			throw new \Exception( "模板文件 {$name} 不存在" );
 		}
