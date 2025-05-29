@@ -183,8 +183,23 @@ trait PluginTrait {
 			self::$need_lc = \class_exists('\J7\Powerhouse\LC');
 		}
 
+		// 判斷網域
+		$allowed_domains = [
+			'instawp.xyz',
+			'wpsite.pro',
+			'wpsite2.pro',
+		];
+		$site_url        = \site_url();
+		foreach ($allowed_domains as $domain) {
+			if (strpos($site_url, $domain) !== false) {
+				self::$need_lc = false;
+				break;
+			}
+		}
+
 		\add_action('admin_menu', [ __CLASS__, 'add_lc_menu' ], 20);
 
+		// TODO 之後可以改成 !\class_exists('\J7\Powerhouse')
 		if (false ===self::$need_lc || !\class_exists('\J7\Powerhouse\LC')) {
 			return;
 		}
