@@ -185,6 +185,8 @@ trait PluginTrait {
 
 		// 判斷網域
 		$allowed_domains = [
+			'wp-mak.ing',
+			'instawp.co',
 			'instawp.xyz',
 			'wpsite.pro',
 			'wpsite2.pro',
