@@ -13,7 +13,7 @@
 	"autoload": {
 		"psr-4": {
 			"J7\\WpUtils\\Traits\\": "src/traits/",
-			"J7\\WpUtils\\Classes\\": "src/classes/"
+			"J7\\TGM\\": "src/tgm/"
 		}
 	},
 	"authors": [
@@ -40,10 +40,10 @@
 		"wp-coding-standards/wpcs": "@stable",
 		"dealerdirect/phpcodesniffer-composer-installer": "@stable",
 		"phpcompatibility/php-compatibility": "@stable",
-		"phpstan/phpstan": "^1.11.9",
-		"php-stubs/woocommerce-stubs": "^9.1",
-		"php-stubs/wordpress-stubs": "^6.6",
-		"phpstan/extension-installer": "^1.4.1"
+		"phpstan/phpstan": "@stable",
+		"php-stubs/woocommerce-stubs": "@stable",
+		"php-stubs/wordpress-stubs": "@stable",
+		"phpstan/extension-installer": "@stable"
 	},
 	"scripts": {
 		"lint": "phpcs"

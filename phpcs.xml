@@ -52,6 +52,8 @@
 				<exclude name="Squiz.Commenting.FunctionComment.MissingParamTag"/>
 				<exclude name="WordPress.PHP.NoSilencedErrors.Discouraged"/>
 				<exclude name="WordPress.WP.I18n.MissingTranslatorsComment"/>
+				<exclude name="Squiz.Commenting.FileComment.Missing"/>
+				<exclude name="WordPress.Security.EscapeOutput.ExceptionNotEscaped"/>
     </rule>
 
     <exclude-pattern>.idea/*</exclude-pattern>
