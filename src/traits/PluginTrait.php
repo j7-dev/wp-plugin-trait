@@ -15,6 +15,7 @@ use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 trait PluginTrait {
 
+
 	/** @var string App Name */
 	public static $app_name = '';
 
@@ -62,7 +63,14 @@ trait PluginTrait {
 
 	/** @var array Template Page Names */
 	public static $template_page_names = [ '404' ];
-
+	/** @var array Callback after check required plugins */
+	protected static $callback;
+	/** @var array Callback Args */
+	protected static $callback_args = [];
+	/** @var string Plugin Entry File */
+	protected static $plugin_entry_path;
+	/** @var array<handle: string, strategy:string> 要使用 type="module" 的 script handle */
+	private static $module_handles = [];
 	/** @var array Required plugins */
 	public $required_plugins = [
 		// array(
@@ -79,17 +87,215 @@ trait PluginTrait {
 		// ),
 	];
 
-	/** @var array Callback after check required plugins */
-	protected static $callback;
+	/**
+	 * Add LC menu
+	 */
+	final public static function add_lc_menu(): void {
+		if (self::$hide_submenu) {
+			return;
+		}
 
-	/** @var array Callback Args */
-	protected static $callback_args = [];
+		$instance         = \J7_Required_Plugins::get_instance(self::$kebab);
+		$is_j7rp_complete = $instance->is_j7rp_complete();
 
-	/** @var string Plugin Entry File */
-	protected static $plugin_entry_path;
+		if (!$is_j7rp_complete) {
+			return;
+		}
 
-	/** @var array<handle: string, strategy:string> 要使用 type="module" 的 script handle */
-	private static $module_handles = [];
+		$ia = true;
+		if (class_exists('\J7\Powerhouse\LC')) {
+			$ia = \J7\Powerhouse\LC::ia(self::$kebab);
+		}
+
+		\add_submenu_page(
+			'powerhouse',
+			self::$app_name,
+			self::$app_name,
+			self::$capability,
+			self::$kebab,
+			( true === self::$need_lc && !$ia ) ? [ __CLASS__, 'redirect' ] : self::$submenu_callback,
+			self::$submenu_position
+		);
+	}
+
+	/**
+	 * Redirect to the admin page.
+	 *
+	 * @return void
+	 */
+	final public static function redirect(): void {
+		if (!class_exists('\J7\Powerhouse\Bootstrap')) {
+			return;
+		}
+		// @phpstan-ignore-next-line
+		\wp_redirect(\admin_url('admin.php?page=' . \J7\Powerhouse\Bootstrap::LC_MENU_SLUG));
+		exit;
+	}
+
+	/**
+	 * 從指定的模板路徑讀取模板文件並渲染數據
+	 *
+	 * @deprecated 0.2.6 以後，改用 load_template
+	 * @param string $name 指定路徑裡面的文件名
+	 * @param mixed  $args 要渲染到模板中的數據
+	 * @param bool   $output 是否輸出
+	 * @param bool   $load_once 是否只載入一次
+	 *
+	 * @return ?string
+	 * @throws \Exception 如果模板文件不存在.
+	 */
+	final public static function get(
+		string $name,
+		mixed $args = null,
+		?bool $output = true,
+		?bool $load_once = false,
+	): ?string {
+		return self::load_template($name, $args, $output, $load_once);
+	}
+
+	/**
+	 * 從指定的模板路徑讀取模板文件並渲染數據
+	 *
+	 * @param string $name 指定路徑裡面的文件名
+	 * @param mixed  $args 要渲染到模板中的數據
+	 * @param bool   $output 是否輸出
+	 * @param bool   $load_once 是否只載入一次
+	 *
+	 * @return ?string
+	 * @throws \Exception 如果模板文件不存在.
+	 */
+	final public static function load_template(
+		string $name,
+		mixed $args = null,
+		?bool $output = true,
+		?bool $load_once = false,
+	): ?string {
+		$result = self::safe_load_template($name, $args, $output, $load_once);
+		if (' ' === $result) {
+			throw new \Exception("模板文件 {$name} 不存在");
+		}
+
+		return $result;
+	}
+
+	/**
+	 * 從指定的模板路徑讀取模板文件並渲染數據
+	 *
+	 * @param string $name 指定路徑裡面的文件名
+	 * @param mixed  $args 要渲染到模板中的數據
+	 * @param bool   $echo 是否輸出
+	 * @param bool   $load_once 是否只載入一次
+	 *
+	 * @return string|false|null
+	 * @throws \Exception 如果模板文件不存在.
+	 */
+	final public static function safe_load_template(
+		string $name,
+		mixed $args = null,
+		?bool $echo = true,
+		?bool $load_once = false,
+	): string|false|null {
+
+		// 如果 $name 是以 page name 開頭的，那就去 page folder 裡面找
+		$is_page = false;
+		foreach (self::$template_page_names as $page_name) {
+			if (str_starts_with($name, $page_name)) {
+				$is_page = true;
+				break;
+			}
+		}
+
+		$folder = $is_page ? 'pages' : 'components';
+
+		$template_path = self::$dir . self::$template_path . "/templates/{$folder}/{$name}";
+
+		// 檢查模板文件是否存在
+		if (file_exists("{$template_path}.php")) {
+			if ($echo) {
+				\load_template("{$template_path}.php", $load_once, $args);
+
+				return null;
+			}
+			ob_start();
+			\load_template("{$template_path}.php", $load_once, $args);
+
+			return ob_get_clean();
+		} elseif (file_exists("{$template_path}/index.php")) {
+			if ($echo) {
+				\load_template("{$template_path}/index.php", $load_once, $args);
+
+				return null;
+			}
+			ob_start();
+			\load_template("{$template_path}/index.php", $load_once, $args);
+
+			return ob_get_clean();
+		}
+
+		return ' ';
+	}
+
+	/**
+	 * 從指定的模板路徑讀取模板文件並渲染數據
+		 *
+	 * @deprecated 0.2.6 以後，改用 safe_load_template
+	 * @param string $name 指定路徑裡面的文件名
+	 * @param mixed  $args 要渲染到模板中的數據
+	 * @param bool   $echo 是否輸出
+	 * @param bool   $load_once 是否只載入一次
+	 *
+	 * @return string|false|null
+	 * @throws \Exception 如果模板文件不存在.
+	 */
+	final public static function safe_get(
+		string $name,
+		mixed $args = null,
+		?bool $echo = true,
+		?bool $load_once = false,
+	): string|false|null {
+		return self::safe_load_template($name, $args, $echo, $load_once);
+	}
+
+	/**
+	 * Add type="module" attribute to script tag
+	 *
+	 * @param string $tag The script tag.
+	 * @param string $handle The script handle.
+	 * @param string $src The script src.
+	 * @return string
+	 */
+	final public static function add_type_attribute( $tag, $handle, $src ) {
+		if (!in_array($handle, array_keys(self::$module_handles))) {
+			return $tag;
+		}
+		// change the script tag by adding type="module" and return it.
+		$tag = sprintf(
+		/*html*/'<script type="module" src="%1$s" %2$s></script>', // phpcs:ignore
+			\esc_url($src),
+			self::$module_handles[ $handle ]
+		);
+		return $tag;
+	}
+
+	/**
+	 * 取得設定
+	 *
+	 * @deprecated 0.2.6 以後，改用 DTO
+	 * @param string|null $key 設定 key
+	 * @param string|null $default 預設值
+	 * @return string|array
+	 */
+	final public static function get_settings( ?string $key = null, ?string $default = null ): string|array {
+		$settings = \get_option(self::$snake . '_settings', []);
+		if (!\is_array($settings)) {
+			$settings = [];
+		}
+		if (!$key) {
+			return $settings;
+		}
+
+		return $settings[ $key ] ?? $default;
+	}
 
 	/**
 	 * Init
@@ -168,6 +374,34 @@ trait PluginTrait {
 	}
 
 	/**
+	 * Check required plugins
+	 *
+	 * @return void
+	 */
+	final public function check_required_plugins( array $args ): void {
+		$this->set_lc($args);
+
+		$instance         = \J7_Required_Plugins::get_instance(self::$kebab);
+		$is_j7rp_complete = $instance->is_j7rp_complete();
+
+		if (!$is_j7rp_complete) {
+			return;
+		}
+		if (!is_callable(self::$callback)) {
+			return;
+		}
+
+		$ia = true;
+		if (class_exists('\J7\Powerhouse\LC')) {
+			$ia = \J7\Powerhouse\LC::ia(self::$kebab);
+		}
+
+		if (true !== self::$need_lc || $ia) {
+			call_user_func_array(self::$callback, self::$callback_args);
+		}
+	}
+
+	/**
 	 * Set LC
 	 *
 	 * @param array $args The arguments.
@@ -214,54 +448,9 @@ trait PluginTrait {
 						'name' => self::$app_name,
 						'link' => $args['link'] ?? '',
 					],
-				]; }
-			);
-	}
-
-
-	/**
-	 * Add LC menu
-	 */
-	final public static function add_lc_menu(): void {
-		if (self::$hide_submenu) {
-			return;
-		}
-
-		$instance         = \J7_Required_Plugins::get_instance(self::$kebab);
-		$is_j7rp_complete = $instance->is_j7rp_complete();
-
-		if (!$is_j7rp_complete) {
-			return;
-		}
-
-		$ia = true;
-		if (class_exists('\J7\Powerhouse\LC')) {
-			$ia = \J7\Powerhouse\LC::ia(self::$kebab);
-		}
-
-		\add_submenu_page(
-		'powerhouse',
-		self::$app_name,
-		self::$app_name,
-		self::$capability,
-		self::$kebab,
-		( true === self::$need_lc && !$ia ) ? [ __CLASS__, 'redirect' ] : self::$submenu_callback,
-		self::$submenu_position
+				];
+			}
 		);
-	}
-
-	/**
-	 * Redirect to the admin page.
-	 *
-	 * @return void
-	 */
-	final public static function redirect(): void {
-		if (!class_exists('\J7\Powerhouse\Bootstrap')) {
-			return;
-		}
-		// @phpstan-ignore-next-line
-		\wp_redirect(\admin_url('admin.php?page=' . \J7\Powerhouse\Bootstrap::LC_MENU_SLUG));
-		exit;
 	}
 
 	/**
@@ -363,24 +552,22 @@ trait PluginTrait {
     /**
      * Set Plugin Update Checker Personal Access Token
      *
-     * @return array
+     * @return void
      */
     public static function set_puc_pat(): void
     {
         $puc_pat_file = self::$dir . '/.puc_pat';
-
         // Check if .env file exists
-        if (file_exists($puc_pat_file)) {
-            // Read contents of .env file
-            $env_contents = file_get_contents($puc_pat_file);
-            self::$puc_pat = trim($env_contents);
+        if (\file_exists($puc_pat_file)) {
+            // Read contents of .env file and base64 decode it
+            $env_contents = \trim(\file_get_contents($puc_pat_file));
+            self::$puc_pat = \base64_decode( $env_contents );
         }
     }
 
-
     /**
      * Plugin update checker
-     * When you push a new release to Github, user will receive updates in wp-admin/plugins.php page
+     * When you push a new release to GitHub, user will receive updates in wp-admin/plugins.php page
      *
      * @return void
      */
@@ -392,11 +579,8 @@ trait PluginTrait {
                 self::$plugin_entry_path,
                 self::$kebab
             );
-            /**
-             * Type
-             *
-             * @var \Puc_v4p4_Vcs_PluginUpdateChecker $update_checker
-             */
+            
+            /** @var \Puc_v4p4_Vcs_PluginUpdateChecker $update_checker */
             $update_checker->setBranch('master');
             // if your repo is private, you need to set authentication
             if (self::$puc_pat) {
@@ -406,160 +590,6 @@ trait PluginTrait {
         } catch (\Throwable $th) {}
     }
 
-
-    /**
-     * Check required plugins
-     *
-     * @return void
-     */
-    public function check_required_plugins( array $args): void
-    {
-				$this->set_lc($args);
-
-        $instance = \J7_Required_Plugins::get_instance(self::$kebab);
-        $is_j7rp_complete = $instance->is_j7rp_complete();
-
-        if (!$is_j7rp_complete) {
-					return;
-				}
-				if (!is_callable(self::$callback)) {
-					return;
-				}
-
-				$ia = true;
-				if (class_exists('\J7\Powerhouse\LC')) {
-					$ia = \J7\Powerhouse\LC::ia(self::$kebab);
-				}
-
-			if(true !== self::$need_lc || $ia) {
-				call_user_func_array(self::$callback, self::$callback_args);
-			}
-
-    }
-
-	/**
-	 * 從指定的模板路徑讀取模板文件並渲染數據
-	 *
-	 * @param string $name 指定路徑裡面的文件名
-	 * @param mixed  $args 要渲染到模板中的數據
-	 * @param bool   $output 是否輸出
-	 * @param bool   $load_once 是否只載入一次
-	 *
-	 * @return ?string
-	 * @throws \Exception 如果模板文件不存在.
-	 */
-	public static function load_template(
-		string $name,
-		mixed $args = null,
-		?bool $output = true,
-		?bool $load_once = false,
-	): ?string {
-		$result = self::safe_load_template( $name, $args, $output, $load_once );
-		if ( ' ' === $result ) {
-			throw new \Exception( "模板文件 {$name} 不存在" );
-		}
-
-		return $result;
-	}
-
-	/**
-	 * 從指定的模板路徑讀取模板文件並渲染數據
-	 * @deprecated 0.2.6 以後，改用 load_template
-	 * @param string $name 指定路徑裡面的文件名
-	 * @param mixed  $args 要渲染到模板中的數據
-	 * @param bool   $output 是否輸出
-	 * @param bool   $load_once 是否只載入一次
-	 *
-	 * @return ?string
-	 * @throws \Exception 如果模板文件不存在.
-	 */
-	public static function get(
-		string $name,
-		mixed $args = null,
-		?bool $output = true,
-		?bool $load_once = false,
-	): ?string {
-		return self::load_template( $name, $args, $output, $load_once );
-	}
-
-	/**
-	 * 從指定的模板路徑讀取模板文件並渲染數據
-	 *
-	 * @param string $name 指定路徑裡面的文件名
-	 * @param mixed  $args 要渲染到模板中的數據
-	 * @param bool   $echo 是否輸出
-	 * @param bool   $load_once 是否只載入一次
-	 *
-	 * @return string|false|null
-	 * @throws \Exception 如果模板文件不存在.
-	 */
-	public static function safe_load_template(
-		string $name,
-		mixed $args = null,
-		?bool $echo = true,
-		?bool $load_once = false,
-	): string|false|null {
-
-		// 如果 $name 是以 page name 開頭的，那就去 page folder 裡面找
-		$is_page = false;
-		foreach ( self::$template_page_names as $page_name ) {
-			if ( str_starts_with( $name, $page_name ) ) {
-				$is_page = true;
-				break;
-			}
-		}
-
-		$folder = $is_page ? 'pages' : 'components';
-
-		$template_path = self::$dir . self::$template_path .  "/templates/{$folder}/{$name}";
-
-		// 檢查模板文件是否存在
-		if ( file_exists( "{$template_path}.php" ) ) {
-			if ( $echo ) {
-				\load_template( "{$template_path}.php", $load_once, $args );
-
-				return null;
-			}
-			ob_start();
-			\load_template( "{$template_path}.php", $load_once, $args );
-
-			return ob_get_clean();
-		} elseif ( file_exists( "{$template_path}/index.php" ) ) {
-			if ( $echo ) {
-				\load_template( "{$template_path}/index.php", $load_once, $args );
-
-				return null;
-			}
-			ob_start();
-			\load_template( "{$template_path}/index.php", $load_once, $args );
-
-			return ob_get_clean();
-		}
-
-		return ' ';
-	}
-
-
-		/**
-	 * 從指定的模板路徑讀取模板文件並渲染數據
-	 * @deprecated 0.2.6 以後，改用 safe_load_template
-	 * @param string $name 指定路徑裡面的文件名
-	 * @param mixed  $args 要渲染到模板中的數據
-	 * @param bool   $echo 是否輸出
-	 * @param bool   $load_once 是否只載入一次
-	 *
-	 * @return string|false|null
-	 * @throws \Exception 如果模板文件不存在.
-	 */
-	public static function safe_get(
-		string $name,
-		mixed $args = null,
-		?bool $echo = true,
-		?bool $load_once = false,
-	): string|false|null {
-		return self::safe_load_template( $name, $args, $echo, $load_once );
-	}
-
 	/**
 	 * Add module handle
 	 * @param string $handle The script handle.
@@ -568,46 +598,6 @@ trait PluginTrait {
 	 */
 	public function add_module_handle( string $handle, string $strategy = 'async' ): void {
 		self::$module_handles[$handle] = $strategy;
-	}
-
-	/**
-	 * Add type="module" attribute to script tag
-	 * @param string $tag The script tag.
-	 * @param string $handle The script handle.
-	 * @param string $src The script src.
-	 * @return string
-	 */
-	public static function add_type_attribute( $tag, $handle, $src ) {
-		if ( !in_array( $handle, array_keys( self::$module_handles ) ) ) {
-			return $tag;
-		}
-		// change the script tag by adding type="module" and return it.
-		$tag = sprintf(
-		/*html*/'<script type="module" src="%1$s" %2$s></script>', // phpcs:ignore
-		\esc_url( $src ),
-		self::$module_handles[$handle]
-		);
-		return $tag;
-	}
-
-
-	/**
-	 * 取得設定
-	 * @deprecated 0.2.6 以後，改用 DTO
-	 * @param string|null $key 設定 key
-	 * @param string|null $default 預設值
-	 * @return string|array
-	 */
-	public static function get_settings( ?string $key = null, ?string $default = null ): string|array {
-		$settings = \get_option(self::$snake . '_settings', []);
-		if (!\is_array($settings)) {
-			$settings = [];
-		}
-		if (!$key) {
-			return $settings;
-		}
-
-		return $settings[ $key ] ?? $default;
 	}
 
 	/**
