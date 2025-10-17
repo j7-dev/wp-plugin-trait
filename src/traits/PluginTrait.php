@@ -424,6 +424,7 @@ trait PluginTrait {
 			'instawp.xyz',
 			'wpsite.pro',
 			'wpsite2.pro',
+			'demo.site-now.app',
 		];
 		$site_url        = \site_url();
 		foreach ($allowed_domains as $domain) {
@@ -579,7 +580,7 @@ trait PluginTrait {
                 self::$plugin_entry_path,
                 self::$kebab
             );
-            
+
             /** @var \Puc_v4p4_Vcs_PluginUpdateChecker $update_checker */
             $update_checker->setBranch('master');
             // if your repo is private, you need to set authentication
