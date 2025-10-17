@@ -1,6 +1,6 @@
 {
 	"name": "j7-dev/wp-plugin-trait",
-	"version": "0.2.12",
+	"version": "0.2.13",
 	"description": "traits for WordPress plugin development",
 	"homepage": "https://github.com/j7-dev",
 	"type": "library",

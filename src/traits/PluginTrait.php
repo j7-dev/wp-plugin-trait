@@ -418,14 +418,7 @@ trait PluginTrait {
 		}
 
 		// 判斷網域
-		$allowed_domains = [
-			'wp-mak.ing',
-			'instawp.co',
-			'instawp.xyz',
-			'wpsite.pro',
-			'wpsite2.pro',
-			'demo.site-now.app',
-		];
+		$allowed_domains = $this->get_allowed_domains();
 		$site_url        = \site_url();
 		foreach ($allowed_domains as $domain) {
 			if (strpos($site_url, $domain) !== false) {
@@ -452,6 +445,46 @@ trait PluginTrait {
 				];
 			}
 		);
+	}
+
+	/** @return array<string> 取得允許的域名清單 */
+	private function get_allowed_domains(): array {
+		try {
+			$allowed_domains = \get_transient('allowed_domains');
+			if ($allowed_domains !== false) {
+				return $allowed_domains;
+			}
+
+			$response = \wp_remote_get(
+				'https://cloud.luke.cafe/wp-json/power-partner-server/allow_domains',
+				[
+					'timeout' => 60,
+				]
+				);
+
+			if (\is_wp_error($response)) {
+				throw new \Exception('Failed to fetch allowed domains');
+			}
+
+			$body        = \wp_remote_retrieve_body($response);
+			$domain_list = \json_decode($body, true);
+
+			if (!\is_array($domain_list) || !$domain_list) {
+				throw new \Exception('domain_list is not array or domain_list is empty');
+			}
+			\set_transient('allowed_domains', $allowed_domains, 7 * \DAY_IN_SECONDS);
+			return $allowed_domains;
+		} catch (\Throwable $th) {
+			// 出錯就給預設值
+			return [
+				'wp-mak.ing',
+				'instawp.co',
+				'instawp.xyz',
+				'wpsite.pro',
+				'wpsite2.pro',
+				'demo.site-now.app',
+			];
+		}
 	}
 
 	/**
