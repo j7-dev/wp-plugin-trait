@@ -482,7 +482,7 @@ trait PluginTrait {
 				'instawp.xyz',
 				'wpsite.pro',
 				'wpsite2.pro',
-				'demo.site-now.app',
+				'site-now.app',
 			];
 		}
 	}
