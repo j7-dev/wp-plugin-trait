@@ -449,8 +449,8 @@ trait PluginTrait {
 
 	/** @return array<string> 取得允許的域名清單 */
 	private function get_allowed_domains(): array {
+		$allowed_domains = \get_transient('allowed_domains');
 		try {
-			$allowed_domains = \get_transient('allowed_domains');
 			if ($allowed_domains !== false) {
 				return $allowed_domains;
 			}
@@ -472,11 +472,9 @@ trait PluginTrait {
 			if (!\is_array($domain_list) || !$domain_list) {
 				throw new \Exception('domain_list is not array or domain_list is empty');
 			}
-			\set_transient('allowed_domains', $allowed_domains, 7 * \DAY_IN_SECONDS);
-			return $allowed_domains;
 		} catch (\Throwable $th) {
 			// 出錯就給預設值
-			return [
+			$allowed_domains = [
 				'wp-mak.ing',
 				'instawp.co',
 				'instawp.xyz',
@@ -484,7 +482,10 @@ trait PluginTrait {
 				'wpsite2.pro',
 				'site-now.app',
 			];
+		} finally {
+			\set_transient('allowed_domains', $allowed_domains, 14 * \DAY_IN_SECONDS);
 		}
+		return $allowed_domains;
 	}
 
 	/**
