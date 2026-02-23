@@ -447,7 +447,10 @@ trait PluginTrait {
 		);
 	}
 
-	/** @return array<string> 取得允許的域名清單 */
+	/**
+	 * @return array<string> 取得允許的域名清單
+	 * @throws \Exception 如果無法獲取允許的域名清單
+	 *  */
 	private function get_allowed_domains(): array {
 		$allowed_domains = \get_transient('allowed_domains');
 		try {
@@ -472,6 +475,8 @@ trait PluginTrait {
 			if (!\is_array($domain_list) || !$domain_list) {
 				throw new \Exception('domain_list is not array or domain_list is empty');
 			}
+
+			$allowed_domains = \is_array($domain_list) ? $domain_list : [];
 		} catch (\Throwable $th) {
 			// 出錯就給預設值
 			$allowed_domains = [
@@ -482,9 +487,8 @@ trait PluginTrait {
 				'wpsite2.pro',
 				'site-now.app',
 			];
-		} finally {
-			\set_transient('allowed_domains', $allowed_domains, 14 * \DAY_IN_SECONDS);
 		}
+		\set_transient('allowed_domains', $allowed_domains, 14 * \DAY_IN_SECONDS);
 		return $allowed_domains;
 	}
 
