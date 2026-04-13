@@ -641,9 +641,16 @@ trait PluginTrait {
 
 	/**
 	 * Load textdomain i18n
+	 *
+	 * Text domain must use kebab-case (dashes), per WordPress Plugin Handbook
+	 * and to match the `Text Domain:` header that plugins declare in their main file.
+	 * Using snake_case here would silently fail because every gettext call
+	 * (`__('...', 'plugin-slug')`) targets the kebab domain registered in the header.
+	 *
+	 * @see https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/
 	 */
 	public function load_textdomain(): void {
-		\load_plugin_textdomain(self::$snake, false, self::$dir . '/languages');
+		\load_plugin_textdomain(self::$kebab, false, self::$dir . '/languages');
 	}
 
 	/**
