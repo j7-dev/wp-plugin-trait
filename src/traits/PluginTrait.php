@@ -650,7 +650,8 @@ trait PluginTrait {
 	 * @see https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/
 	 */
 	public function load_textdomain(): void {
-		\load_plugin_textdomain(self::$kebab, false, self::$dir . '/languages');
+		$plugin_rel_path = \dirname(\plugin_basename(self::$plugin_entry_path)) . '/languages';
+		\load_plugin_textdomain(self::$kebab, false, $plugin_rel_path);
 	}
 
 	/**
